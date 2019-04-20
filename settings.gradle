@@ -1,0 +1,4 @@
+include ':one.irradia.servicedirectory.api'
+include ':one.irradia.servicedirectory.vanilla'
+include ':one.irradia.servicedirectory.tests'
+include ':one.irradia.servicedirectory.tests.device'
