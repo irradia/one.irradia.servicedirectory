@@ -42,11 +42,13 @@ abstract class ServiceDirectoryContract {
       A()
     }
 
-    this.expectedException.expect(ServiceConfigurationException::class.java)
     registry.registerService(A::class.java) {
       this.logger.debug("construct A")
       A()
     }
+
+    val available = registry.requireServices(A::class.java)
+    Assert.assertEquals(2, available.size)
   }
 
   @Test
@@ -224,5 +226,31 @@ abstract class ServiceDirectoryContract {
         StringContains.containsString(B::class.java.canonicalName))))
 
     registry.optionalService(B::class.java)
+  }
+
+  @Test
+  fun testRequiredServiceLoaderCardinality() {
+    val registry = this.serviceDirectory()
+
+    val services =
+      registry.requireServices(AvailableMultiService::class.java)
+
+    Assert.assertEquals(3, services.size)
+    Assert.assertEquals("MultiA available", 1, services.filter { c -> c is MultiA }.size)
+    Assert.assertEquals("MultiB available", 1, services.filter { c -> c is MultiB }.size)
+    Assert.assertEquals("MultiC available", 1, services.filter { c -> c is MultiC }.size)
+  }
+
+  @Test
+  fun testOptionalServiceLoaderCardinality() {
+    val registry = this.serviceDirectory()
+
+    val services =
+      registry.optionalServices(AvailableMultiService::class.java)
+
+    Assert.assertEquals(3, services.size)
+    Assert.assertEquals("MultiA available", 1, services.filter { c -> c is MultiA }.size)
+    Assert.assertEquals("MultiB available", 1, services.filter { c -> c is MultiB }.size)
+    Assert.assertEquals("MultiC available", 1, services.filter { c -> c is MultiC }.size)
   }
 }
